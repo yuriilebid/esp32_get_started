@@ -1,0 +1,20 @@
+{
+    "project_name":       "bootloader",
+    "project_path":       "/Users/vladimirlebed/esp/esp-idf/components/bootloader/subproject",
+    "build_dir":          "/Users/vladimirlebed/Desktop/esp32_get_started/creative/build/bootloader",
+    "config_file":        "/Users/vladimirlebed/Desktop/esp32_get_started/creative/sdkconfig",
+    "config_defaults":    "",
+    "app_elf":            "bootloader.elf",
+    "app_bin":            "bootloader.bin",
+    "git_revision":       "v4.3-dev-771-gc77c4ccf6",
+    "target":             "esp32",
+    "phy_data_partition": "",
+    "monitor_baud" :      "115200",
+    "monitor_toolprefix": "xtensa-esp32-elf-",
+    "config_environment" : {
+        "COMPONENT_KCONFIGS" : "/Users/vladimirlebed/esp/esp-idf/components/efuse/Kconfig;/Users/vladimirlebed/esp/esp-idf/components/esp32/Kconfig;/Users/vladimirlebed/esp/esp-idf/components/esp_common/Kconfig;/Users/vladimirlebed/esp/esp-idf/components/log/Kconfig;/Users/vladimirlebed/esp/esp-idf/components/spi_flash/Kconfig",
+        "COMPONENT_KCONFIGS_PROJBUILD" : "/Users/vladimirlebed/esp/esp-idf/components/bootloader/Kconfig.projbuild;/Users/vladimirlebed/esp/esp-idf/components/esptool_py/Kconfig.projbuild;/Users/vladimirlebed/esp/esp-idf/components/partition_table/Kconfig.projbuild"
+    },
+    "build_components" : [ "bootloader", "bootloader_support", "efuse", "esp32", "esp_common", "esp_rom", "esptool_py", "log", "main", "micro-ecc", "partition_table", "soc", "spi_flash", "xtensa", "" ],
+    "build_component_paths" : [ "/Users/vladimirlebed/esp/esp-idf/components/bootloader", "/Users/vladimirlebed/esp/esp-idf/components/bootloader_support", "/Users/vladimirlebed/esp/esp-idf/components/efuse", "/Users/vladimirlebed/esp/esp-idf/components/esp32", "/Users/vladimirlebed/esp/esp-idf/components/esp_common", "/Users/vladimirlebed/esp/esp-idf/components/esp_rom", "/Users/vladimirlebed/esp/esp-idf/components/esptool_py", "/Users/vladimirlebed/esp/esp-idf/components/log", "/Users/vladimirlebed/esp/esp-idf/components/bootloader/subproject/main", "/Users/vladimirlebed/esp/esp-idf/components/bootloader/subproject/components/micro-ecc", "/Users/vladimirlebed/esp/esp-idf/components/partition_table", "/Users/vladimirlebed/esp/esp-idf/components/soc", "/Users/vladimirlebed/esp/esp-idf/components/spi_flash", "/Users/vladimirlebed/esp/esp-idf/components/xtensa", "" ]
+}
