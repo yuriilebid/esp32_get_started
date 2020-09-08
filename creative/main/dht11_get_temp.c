@@ -17,23 +17,23 @@
 #define DHT11_POWER 2
 #define DHT11_DATA  4
 
-static void gpio_set_direction_wrapper(int gpio, int mode) {
-	if (gpio_set_direction(gpio, mode) != ESP_OK) {
-		ESP_LOGI("gpio_set_direction: ", "%s", "some error occured.");
-		exit(1);
-	}
+void gpio_set_direction_wrapper(int gpio, int mode) {
+    if (gpio_set_direction(gpio, mode) != ESP_OK) {
+        ESP_LOGI("gpio_set_direction: ", "%s", "some error occured.");
+        exit(1);
+    }
 }
 
-static void gpio_set_level_wrapper(int gpio, int level) {
-	if (gpio_set_level(gpio, level) != ESP_OK) {
-		ESP_LOGI("gpio_set_level ", "%s", "some error occured.");
-		exit(1);
-	}
+void gpio_set_level_wrapper(int gpio, int level) {
+    if (gpio_set_level(gpio, level) != ESP_OK) {
+        ESP_LOGI("gpio_set_level ", "%s", "some error occured.");
+        exit(1);
+    }
 }
 
 static int wait_status(int time, _Bool status) {
     int count = 0;
-    while (gpio_get_level(DHT11_DATA) == status){
+    while (gpio_get_level(GPIO_DATA) == status){
         if (count > time)
             return -1;
         ets_delay_us(1);
@@ -73,7 +73,7 @@ static int preparing_for_receiving_data(int gpio) {
     return 1;
 }
 
-static int communicate() {
+int communicate_temp() {
     int res = 0;
     uint8_t data[5];
 
@@ -106,13 +106,4 @@ static int communicate() {
         printf("Humidity: %d %%\n", data[0]);
         // vTaskDelay(5);
     return data[0];
-}
-
-
-int dht11_get_temp() {
-    gpio_set_direction_wrapper(DHT11_POWER, GPIO_MODE_OUTPUT); // VCC power.
-    gpio_set_level_wrapper(DHT11_POWER, 1);                    // switch on power.
-
-    int humidity = communicate();
-    return humidity;
 }

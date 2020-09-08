@@ -1,2 +1,2 @@
-idf_component_register(SRCS "oled.c" "font6x8.h"
+idf_component_register(SRCS "accelerator.c" "peripherals.h" "register_map.h"
                        INCLUDE_DIRS "")

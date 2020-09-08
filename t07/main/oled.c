@@ -12,13 +12,6 @@
 #include "font6x8.h"
 #include "driver/i2c.h"
 
-#define GPIO_POWER 2
-#define GPIO_DATA 4
-
-#define WAITNULL() while(gpio_get_level(GPIO_DATA) == 1) {ets_delay_us(1);}
-#define WAITONE() while(gpio_get_level(GPIO_DATA) == 0) {ets_delay_us(1);}
-#define CONVERT(a, b, c) for(int i = 0; i < 8; i++) {(c) += (a[(b) * 8 + i]) * pow(2, 7 - (i));}
-
 #define GPIO_SDA GPIO_NUM_21
 #define GPIO_SCL GPIO_NUM_22
 #define SH1106_ADDR 0x3C            // Deafault sh1106  address
@@ -27,7 +20,7 @@
 typedef struct {
     uint8_t addr;
     i2c_port_t port;
-    uint8_t grid[16][128];          // Pixesl grid (16 * byte(8 bit)) * 128
+    uint8_t grid[8][128];          // Pixesl grid (16 * byte(8 bit)) * 128
     uint16_t changes;
 } sh1106_t;
 
@@ -155,102 +148,22 @@ void print_string(char *str, sh1106_t *display, int size, int page) {
         print_char(str[i], display, i, size, page);
     }
 }
+
 void app_main() {
+    sh1106_t display;
+
     gpio_set_direction(GPIO_NUM_32, GPIO_MODE_OUTPUT);
     gpio_set_level(GPIO_NUM_32, 1);
     init_i2c();
-    sh1106_t display;
     display.addr = SH1106_ADDR;
     display.port = SH1106_PORT;
     init_sh1106(&display);
-
-    // gpio_set_direction();  // NC, not connected
-    // gpio_set_direction();  // GND, ground arduino
-
-    /* DATA is used for communication between the microprocessor 
-       and DHT11 and synchronization, single-bus data format, a 
-       40-bit data transfer, high first-out. */
-
-    /* 0011 0101       0000 0000        0001 1000          0000 0000        0100 1101 
-       ---------   |   ---------   |    ---------     |    ---------    |   ---------
-     High humidity |  Low humidity | High temperature | Low temperature |  Parity bit */
-
-
-    int data[40];
-    int num1 = 0;
-    int num2 = 0;
-    int num3 = 0;
-    int num4 = 0;
-    int num5 = 0;
-
-    // do {
-    while(1) {
-        num1 = 0;
-        num2 = 0;
-        num3 = 0;
-        num4 = 0;
-        num5 = 0;
-        gpio_set_direction(GPIO_POWER, GPIO_MODE_OUTPUT);       // VCC power
-        gpio_set_direction(GPIO_DATA, GPIO_MODE_OUTPUT);        // Data
-
-        gpio_set_level(GPIO_POWER, 1);
-        gpio_set_level(GPIO_DATA, 1);
-
-        ets_delay_us(2500 * 1000);                         // wait 2.5 seconds to cross the unstable state
-
-        gpio_set_level(GPIO_DATA, 0);
-        ets_delay_us(20 * 1000);                           // should be >= 18 ms
-        gpio_set_level(GPIO_DATA, 1);
-        ets_delay_us(40);
-        gpio_set_direction(GPIO_DATA, GPIO_MODE_INPUT);
-
-        int x = gpio_get_level(GPIO_DATA);
-        printf("Answear, about getting info - %d\n", x);
-        WAITONE();
-        x = gpio_get_level(GPIO_DATA);
-        printf("Answear, about getting info - %d\n", x);
-        WAITNULL();
-        
-        for(int i = 0; i < 35; i++) {
-            WAITONE();
-            ets_delay_us(30);
-            if(gpio_get_level(GPIO_DATA)) {
-                data[i] = 1;
-                WAITNULL();
-            }
-            else if(!gpio_get_level(GPIO_DATA)) {
-                data[i] = 0;
-            }
-            // printf("%d\n", data[i]);
+    for(uint8_t y = 0; y < 128; y++) {
+        for(uint8_t x = 0; x < 128; x++) {
+            set_pixel_sh1106(&display, x, y, 0);
         }
-
-        CONVERT(data, 0, num1);
-        CONVERT(data, 1, num2);
-        CONVERT(data, 2, num3);
-        CONVERT(data, 3, num4);
-        CONVERT(data, 4, num5);
-
-        printf("First number - %d\n", num1);
-        printf("Second number - %d\n", num2);
-        printf("Third number - %d\n", num3);
-        printf("Fourth number - %d\n", num4);
-
-        for(uint8_t y = 0; y < 128; y++) {
-            for(uint8_t x = 0; x < 128; x++) {
-                set_pixel_sh1106(&display, x, y, 0);
-            }
-        }
-
-        print_string("temperature", &display, 1, 0);
-        char temperature_num[30];
-        bzero(&temperature_num, '\0');
-        sprintf(temperature_num, "+%dC", num3);
-        print_string(temperature_num, &display, 2, 2);
-        print_string("humidity", &display, 1, 4);
-        char humidity_num[30];
-        bzero(&humidity_num, '\0');
-        sprintf(humidity_num, "%d per", num1);
-        print_string(humidity_num, &display, 2, 6);
-        refresh_sh1106(&display);
     }
+    print_string("Hello", &display, 2, 0);
+    print_string("world!", &display, 1, 3);
+    refresh_sh1106(&display);
 }

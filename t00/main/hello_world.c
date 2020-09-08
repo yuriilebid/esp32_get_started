@@ -7,6 +7,7 @@ void print_hello(void *pvParameters) {
         printf("Hello world\n");
         vTaskDelay(1000 / portTICK_PERIOD_MS);
     }
+    vTaskDelete(NULL);
 }
 
 void app_main() {

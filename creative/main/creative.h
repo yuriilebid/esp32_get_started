@@ -61,5 +61,7 @@ void oled_print_hum(char *string, int column, int size);
 
 void speaker_beep();
 
-int dht11_get_temp();
-int dht11_get_humidity();
+void gpio_set_direction_wrapper(int gpio, int mode);
+void gpio_set_level_wrapper(int gpio, int level);
+int communicate();
+int communicate_temp();
