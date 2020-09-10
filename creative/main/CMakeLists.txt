@@ -1,11 +1,4 @@
 idf_component_register(SRCS "creative.c"
-                            "init_sh1106.c" 
-                            "oled_init.c" 
-                            "oled_print.c" 
-                            "refresh_sh1106.c"
                             "creative.h"
                             "font6x8.h"
-                            "dht11_get_temp.c"
-                            "dht11_get_humidity.c"
-                            "oled_print_hum.c"
                        INCLUDE_DIRS "")

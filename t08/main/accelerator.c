@@ -8,6 +8,7 @@
 #include "driver/gpio.h"
 #include "peripherals.h"
 #include "register_map.h"
+#include "driver/dac.h"
 
 #define UPDATE_DELAY (200u / portTICK_PERIOD_MS)
 
@@ -18,6 +19,16 @@ static void gpio_set_dirrection_wrapper(int gpio, gpio_mode_t mode) {
     	printf("gpio_set_dirrection: error");
 
     }
+}
+
+void beep_sound(void *pvParameters) {
+    for(int i = 0; i < 100; i++) {
+        for (int j = 0; j < 256; j++) {
+            dac_output_voltage(DAC_CHANNEL_1, j);
+            ets_delay_us(10);
+        }
+    }
+    vTaskDelete(NULL);
 }
 
 void trans_packet(spi_device_handle_t spi, uint8_t address, uint8_t data) {
@@ -98,20 +109,22 @@ void adx1345_read_task(void *pvParameters) {
 	 		gpio_set_level(GPIO_LED1, 1);
             gpio_set_level(GPIO_LED2, 1);
             gpio_set_level(GPIO_LED2, 1);
+            xTaskCreate(beep_sound, "beep_sound", 2048u, NULL, 5, NULL);
  		}
         else {
             gpio_set_level(GPIO_LED1, 0);
             gpio_set_level(GPIO_LED2, 0);
             gpio_set_level(GPIO_LED3, 0);
         }
-
-        vTaskDelay(10 / portTICK_PERIOD_MS);
+        ets_delay_us(500000);
     }
 }
 
 void app_main() {
 	esp_err_t exit;
 
+    gpio_set_direction(GPIO_NUM_5, GPIO_MODE_INPUT);
+    dac_output_enable(DAC_CHANNEL_1);
     gpio_set_dirrection_wrapper(GPIO_LED1, GPIO_MODE_OUTPUT);
     gpio_set_dirrection_wrapper(GPIO_LED2, GPIO_MODE_OUTPUT);
     gpio_set_dirrection_wrapper(GPIO_LED3, GPIO_MODE_OUTPUT);

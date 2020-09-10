@@ -11,20 +11,24 @@
 #include <math.h>
 #include "esp_log.h"
 #include "driver/dac.h"
+#include <pthread.h>
 
 typedef struct {
     uint8_t addr;
     i2c_port_t port;
-    uint8_t grid[16][128];          // Pixesl grid (16 * byte(8 bit)) * 128
+    uint8_t grid[8][128];          // Pixesl grid (16 * byte(8 bit)) * 128
     uint16_t changes;
 } sh1106_t;
+
+#define ESP_INTR_FLAG_DEFAULT 0
+
+#define UPDATE_DELAY (200u / portTICK_PERIOD_MS)
 
 #define GPIO_POWER 2
 #define GPIO_DATA 4
 
-#define WAITNULL() while(gpio_get_level(GPIO_DATA) == 1) {ets_delay_us(1);}
-#define WAITONE() while(gpio_get_level(GPIO_DATA) == 0) {ets_delay_us(1);}
-#define CONVERT(a, b, c) for(int i = 0; i < 8; i++) {(c) += (a[(b) * 8 + i]) * pow(2, 7 - (i));}
+#define SW1 39
+#define SW2 18
 
 #define GPIO_SDA GPIO_NUM_21
 #define GPIO_SCL GPIO_NUM_22
@@ -46,22 +50,17 @@ typedef struct {
 #define GPIO_LED2 27
 #define GPIO_LED3 33
 
-#define EN_ACCEL 23
+#define GPIO_EN_ACCEL 23
 
 #define PIN_MISO 12
 #define PIN_MOSI 13
 #define PIN_CLK 14
 #define PIN_CS 15
 
-void oled_init();
-void refresh_sh1106(sh1106_t *display, bool update);
-void init_sh1106(sh1106_t *display);
-void oled_print(char *string, int column, int size, bool update);
-void oled_print_hum(char *string, int column, int size);
+#define OLED_ENABLE 32
+#define GPIO_NUM_5 5
 
-void speaker_beep();
+#define GPIO_INPUT_PIN_SEL ((1ULL<<SW1) | (1ULL<<SW2))
 
-void gpio_set_direction_wrapper(int gpio, int mode);
-void gpio_set_level_wrapper(int gpio, int level);
-int communicate();
-int communicate_temp();
+
+void refresh_sh1106(sh1106_t *display);
